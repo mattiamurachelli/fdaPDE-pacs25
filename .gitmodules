@@ -1,0 +1,4 @@
+[submodule "fdaPDE-cpp"]
+	path = fdaPDE-cpp
+	url = https://github.com/mattiamurachelli/fdaPDE-cpp.git
+	branch = develop
