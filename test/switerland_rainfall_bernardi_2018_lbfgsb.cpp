@@ -42,6 +42,8 @@ int main() {
 
     double rho = 0.5;
     vector_t rho_seq = vector_t::Zero(13, 1);
+    // Tests show that many values of rho lead to ill-conditioned matrices and the
+    // execution fails. We need to work on a fix to this problem!
     rho_seq << 0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.99;
 
     int n_rho = rho_seq.rows();
@@ -80,7 +82,7 @@ int main() {
         m.fit(lambda);
         return ((m.fitted() - m.response()).squaredNorm());
     };
-    
+/*  
     struct function_to_optimize {
         function_to_optimize(const ScalarField<2>& Field) : Field_(Field) { }
 
@@ -94,7 +96,7 @@ int main() {
     };
 
     function_to_optimize F_(PC);
-
+*/
     // Set up optimizer
     LBFGSB<2> lbfgsb;
 
@@ -117,18 +119,18 @@ int main() {
             x(1, 0) = mu_optim(i - 1, 1);
         }
 
-        lbfgsb.optimize(F_, x, lower_bounds, upper_bounds, BacktrackingLineSearch());
+        lbfgsb.optimize(PC, x, lower_bounds, upper_bounds, BacktrackingLineSearch());
         std::cout << "num_iter : " << lbfgsb.n_iter() << std::endl;
 
         // see Bernardi
         if (x(0, 0) == 0.0) {
             x(0, 0) = std::numbers::pi;
-            lbfgsb.optimize(F_, x, lower_bounds, upper_bounds, BacktrackingLineSearch());
+            lbfgsb.optimize(PC, x, lower_bounds, upper_bounds, BacktrackingLineSearch());
             std::cout << "num_iter : " << lbfgsb.n_iter() << std::endl;
         } else if (x(0, 0) == std::numbers::pi) {
             std::cout << "sfigato 2" << std::endl;
             x(0, 0) = 0.0;
-            lbfgsb.optimize(F_, x, lower_bounds, upper_bounds, BacktrackingLineSearch());
+            lbfgsb.optimize(PC, x, lower_bounds, upper_bounds, BacktrackingLineSearch());
             std::cout << "num_iter : " << lbfgsb.n_iter() << std::endl;
         }
 
