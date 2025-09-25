@@ -9,6 +9,7 @@
 #include <fdaPDE/fdapde.h>
 #include <unsupported/Eigen/SparseExtra>
 #include <filesystem>
+#include <fstream>
 #include <chrono>
 
 // useful type aliases
@@ -51,8 +52,15 @@ int main() {
 
     function_to_optimize fun_mit(fun);
 
+    // Set up output file stream
+    std::ofstream file("simulations.csv");
+    file << "TestId,OptId,NumIter,CompTime,MinPoint,Fx,DistSol,DistBetween" << std::endl;
+    
     // Perform multiple simulations
-    int num_simulations = 5;
+    int num_simulations = 50;
+    float dist_mit, dist_our, dist_between;
+    VectorXd solution = VectorXd::Constant(2, 0.0);
+
     for(int i=0; i < num_simulations; ++i) {
         // Random initial guess
         Eigen::VectorXd x0(2);
@@ -67,9 +75,17 @@ int main() {
         // Now perform the minimization
         std::cout << "________________________________________________________________" << std::endl;
         std::cout << "TEST NUMBER : " << i+1 << std::endl;
-        std::cout << "Initial guess = (" << x0(0) << ", " << x0(1) << ")" << std::endl;
-        // MIT version
+        std::cout << "Initial guess = (";
+        for(int i=0; i < x0.size(); ++i) {
+            if(i == x0.size()-1) {
+                std::cout << x0(i);
+            } else {
+                std::cout << x0(i) << ", ";
+            }
+        }
+        std::cout << ")" << std::endl;
         std::cout << "________________________________________________________________" << std::endl;
+        // MIT version
         double fx;                      // stores f(x) at the minimum
         Eigen::VectorXd x = x0;         // necessary since the solver overwrites the initial guess
         // Start timer (MIT)
@@ -78,30 +94,32 @@ int main() {
         // Stop timer (MIT)
         auto end_mit = std::chrono::high_resolution_clock::now();
         // Convert timer to nanoseconds (MIT)
-        auto elapsed_ms_mit = std::chrono::duration_cast<std::chrono::nanoseconds>(end_mit - start_mit);
-        // Output (MIT)
-        std::cout << "MIT version" << std::endl;
-        std::cout << niter << " iterations" << std::endl;
-        std::cout << "x = (" << x(0) << ", " << x(1) << ")" << std::endl;
-        std::cout << "f(x) = " << fx << std::endl;
-        std::cout << "Elapsed time = " << elapsed_ms_mit << " nanoseconds" << std::endl; 
-        // OUR version
-        std::cout << "________________________________________________________________" << std::endl;
+        auto elapsed_time_mit = std::chrono::duration_cast<std::chrono::nanoseconds>(end_mit - start_mit);
+        long long elapsed_time_mit_raw = elapsed_time_mit.count();
         // Start timer (OUR)
         auto start_our = std::chrono::high_resolution_clock::now();
         solver_our.optimize(fun, x0, fdapde::BacktrackingLineSearch());
         // Stop timer (OUR)
         auto end_our = std::chrono::high_resolution_clock::now();
         // Convert timer to nanoseconds (OUR)
-        auto elapsed_ms_our = std::chrono::duration_cast<std::chrono::nanoseconds>(end_our - start_our);
-        // Output (OUR)
-        std::cout << "OUR version : " << std::endl;
-        std::cout << solver_our.n_iter() << " iterations" << std::endl;
-        std::cout << "x = (" << solver_our.optimum()[0] << ", " << solver_our.optimum()[1] << ")" << std::endl;
-        std::cout << "f(x) = " << solver_our.value() << std::endl;
-        std::cout << "Elapsed time = " << elapsed_ms_our << " nanoseconds" << std::endl; 
-        std::cout << "________________________________________________________________" << std::endl;
+        auto elapsed_time_our = std::chrono::duration_cast<std::chrono::nanoseconds>(end_our - start_our);
+        long long elapsed_time_our_raw = elapsed_time_our.count();
+        // Compute required distances
+        dist_mit = (x - solution).norm();
+        dist_our = (solver_our.optimum() - solution).norm();
+        dist_between = (solver_our.optimum() - x).norm();
+        // Output
+        // MIT Line
+        std::string separator_mit = "";
+        file << i+1 << "," << "MIT" << "," << niter << "," << elapsed_time_mit_raw << ",";
+        for(const auto value : x) { file << separator_mit << value; separator_mit = ";";}
+        file << "," << fx << "," << dist_mit << "," << dist_between << std::endl;
+        // OUR line
+        std::string separator_our = "";
+        file << i+1 << "," << "OUR" << "," << solver_our.n_iter() << "," << elapsed_time_our_raw << ",";
+        for(const auto value : solver_our.optimum()) { file << separator_our << value; separator_our = ";";}
+        file << "," << solver_our.value() << "," << dist_our << "," << dist_between << std::endl;
     }
-    // TO IMPLEMENT -> save everything to a csv file in order to make graphs easily
+    
     return 0;
 }
