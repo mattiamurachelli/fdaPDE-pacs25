@@ -53,7 +53,7 @@ int main() {
     function_to_optimize fun_mit(fun);
 
     // Set up output file stream
-    std::ofstream file("simulations.csv");
+    std::ofstream file("simulations_paraboloid.csv");
     file << "TestId,OptId,NumIter,CompTime,MinPoint,Fx,DistSol,DistBetween" << std::endl;
     
     // Perform multiple simulations
