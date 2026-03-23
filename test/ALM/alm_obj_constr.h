@@ -53,17 +53,34 @@ struct constrFunction {
     using vector_t = std::conditional_t<N == Eigen::Dynamic, Eigen::Matrix<double, Eigen::Dynamic, 1>, Eigen::Matrix<double, N, 1>>;
     // Scalar Field
     ScalarField<N> constr_;
-    // Boolean
+    // Gradient
+    std::function<vector_t(const vector_t&)> gradient_;
+    // Inequality constraint flag
     bool is_inequality_;
-    // Constructor
-    constrFunction(const ScalarField<N>& constr, const bool is_inequality) : constr_(constr), is_inequality_(is_inequality) {}
+
+    // Standard constructor that uses the internal gradient of ScalarField
+    constrFunction(const ScalarField<N>& constr, bool is_inequality) 
+                  : constr_(constr), 
+                    gradient_([this](const vector_t& x) {return constr_.gradient()(x);}),
+                    is_inequality_(is_inequality) {}
+
+    // Constructor that allows to set a custom gradient function 
+    template<typename Grad>
+    constrFunction(const ScalarField<N>& constr, Grad grad, bool is_inequality)
+                  : constr_(constr), gradient_(grad), is_inequality_(is_inequality) {
+                        static_assert(
+                            std::is_invocable_r_v<vector_t, Grad, const vector_t&>,
+                            "Grad must be callable with (const vector_t&) and return vector_t"
+                        );
+                    }
+
     // Call operator
     double operator()(const vector_t& x) const {
         return constr_(x);
     }
     // Gradient method
     vector_t gradient(const vector_t& x) const {
-        return constr_.gradient()(x);
+        return gradient_(x);
     }
 };
 // Constraint Type (final)
