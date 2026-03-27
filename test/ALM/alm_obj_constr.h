@@ -33,15 +33,21 @@ struct objFunction {
     using vector_t = std::conditional_t<N == Eigen::Dynamic, Eigen::Matrix<double, Eigen::Dynamic, 1>, Eigen::Matrix<double, N, 1>>;
     // Scalar Field
     ScalarField<N> objective_;
-    // Constructor
-    objFunction(const ScalarField<N>& objective) : objective_(objective) {}
+    // Gradient
+    std::function<vector_t(const vector_t&)> gradient_;
+    // Constructor without gradient
+    objFunction(const ScalarField<N>& objective) : objective_(objective), gradient_(nullptr) {}
+    // Constructor with gradient
+    objFunction(const ScalarField<N>& objective, const std::function<vector_t(const vector_t&)> gradient)
+        : objective_(objective), gradient_(gradient) {}
     // Call operator
     double operator()(const vector_t& x) const {
         return objective_(x);
     }
     // Gradient method
     vector_t gradient(const vector_t& x) const {
-        return objective_.gradient()(x);
+        if(gradient_) { return gradient_(x);}
+        else { return objective_.gradient()(x);}  
     }
 };
 // Constraint Type (introduction)
@@ -61,7 +67,7 @@ struct constrFunction {
     // Standard constructor that uses the internal gradient of ScalarField
     constrFunction(const ScalarField<N>& constr, bool is_inequality) 
                   : constr_(constr), 
-                    gradient_([this](const vector_t& x) {return constr_.gradient()(x);}),
+                    gradient_([constr](const vector_t& x) {return constr.gradient()(x);}),
                     is_inequality_(is_inequality) {}
 
     // Constructor that allows to set a custom gradient function 
