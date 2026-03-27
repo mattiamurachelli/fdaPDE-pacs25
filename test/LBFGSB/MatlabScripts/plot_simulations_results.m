@@ -15,8 +15,8 @@ data_OUR = data(strcmp(data.OptId, 'OUR'), :);
 MIT_NumIter = data_MIT.NumIter;
 OUR_NumIter = data_OUR.NumIter;
 % CompTime (converting from ns to ms)
-MIT_CompTime = data_MIT.CompTime/(1e-6);
-OUR_CompTime = data_OUR.CompTime/(1e-6);
+MIT_CompTime = data_MIT.CompTime/(1e6);
+OUR_CompTime = data_OUR.CompTime/(1e6);
 % MinPoint
 MIT_MinPoint = parsePoints(data_MIT.MinPoint);
 OUR_MinPoint = parsePoints(data_OUR.MinPoint);
@@ -41,22 +41,22 @@ min_val = min([MIT_NumIter; OUR_NumIter]);
 max_val = max([MIT_NumIter; OUR_NumIter]);
 plot([min_val, max_val], [min_val, max_val], 'r--', 'LineWidth', 2);
 legend('Data points', 'y = x', 'Location', 'best');
-saveas(NumIterPlot, fullfile(folder, 'NumIterComparison.png'))
+saveas(NumIterPlot, fullfile(folder, 'NumIterComparison.png'));
 
 
 % Plot CompTime
 CompTimePlot = figure();
-scatter(MIT_NumIter, OUR_NumIter, 'k*');
+scatter(MIT_CompTime, OUR_CompTime, 'k*');
 xlabel('MIT computation time');
 ylabel('OUR computation time');
 title('Comparison of computation time: MIT vs OUR');
 grid on; 
 hold on;
-min_val = min([MIT_NumIter; OUR_NumIter]);
-max_val = max([MIT_NumIter; OUR_NumIter]);
+min_val = min([MIT_CompTime; OUR_CompTime]);
+max_val = max([MIT_CompTime; OUR_CompTime]);
 plot([min_val, max_val], [min_val, max_val], 'r--', 'LineWidth', 2);
 legend('Data points', 'y = x', 'Location', 'best');
-saveas(NumIterPlot, fullfile(folder, 'CompTimeComparison.png'))
+saveas(NumIterPlot, fullfile(folder, 'CompTimeComparison.png'));
 
 % Plot DistSolution
 DistSolPlot = figure();
@@ -64,11 +64,11 @@ DistSol_all = [data_MIT.DistSol, data_OUR.DistSol];
 boxplot(DistSol_all, 'Labels', {'MIT', 'OUR'});
 ylabel('Distance from correct solution');
 title('Comparison of distance from correct solution');
-saveas(DistSolPlot, fullfile(folder, 'DistSolComparison.png'))
+saveas(DistSolPlot, fullfile(folder, 'DistSolComparison.png'));
 
 % Plot DistBetween
 DistBetweenPlot = figure();
 boxplot(DistBetween);
-ylabel('Distance from the two solutions');
-title('Comparison of distance from the two solutions');
-saveas(DistBetweenPlot, fullfile(folder, 'DistBetweenComparison.png'))
+ylabel('Distance between the two solutions');
+title('Comparison of distance between the two solutions');
+saveas(DistBetweenPlot, fullfile(folder, 'DistBetweenComparison.png'));

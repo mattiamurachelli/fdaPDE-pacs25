@@ -37,8 +37,9 @@ struct Rosenbrock {
 
 int main() {
 
-    // Define the dimension of the problem
+    // Define the dimension of the problem and number of simulations
     const int n = 5;
+    int num_simulations = 10;
 
     // Define MIT minimizer
     LBFGSpp::LBFGSBParam<double> param;
@@ -96,7 +97,6 @@ int main() {
     file << "TestId,OptId,NumIter,CompTime,MinPoint,Fx,DistSol,DistBetween" << std::endl;
     
     // Perform multiple simulations
-    int num_simulations = 10;
     float dist_mit, dist_our, dist_between;
     VectorXd solution = VectorXd::Constant(n, 1.0);
 
