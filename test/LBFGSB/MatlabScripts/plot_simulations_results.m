@@ -1,5 +1,5 @@
-%% SCRIPT TO PLOT THE RESULTS OF THE SIMULATIONS OF OUR
-%% LBFGSB OPTIMIZER AGAINST MIT'S ONE
+%% SCRIPT TO PLOT THE RESULTS OF THE SIMULATIONS OF OUR LBFGSB
+%% VS MIT LBFGSB OPTIMIZER
 % CREATE PLOTS FOLDER
 folder = '../Plots';
 if ~exist(folder, 'dir')
@@ -31,32 +31,36 @@ DistBetween = data_MIT.DistBetween;
 
 % Plot NumIter
 NumIterPlot = figure();
-scatter(MIT_NumIter, OUR_NumIter, 'k*');
-xlabel('MIT iterations');
-ylabel('OUR iterations');
-title('Comparison of iterations: MIT vs OUR');
-grid on; 
-hold on;
-min_val = min([MIT_NumIter; OUR_NumIter]);
-max_val = max([MIT_NumIter; OUR_NumIter]);
-plot([min_val, max_val], [min_val, max_val], 'r--', 'LineWidth', 2);
-legend('Data points', 'y = x', 'Location', 'best');
-saveas(NumIterPlot, fullfile(folder, 'NumIterComparison.png'));
+NumIter_all = [
+    MIT_NumIter;
+    OUR_NumIter
+];
+group_iter = [
+    repmat({'OUR-MIT'}, length(MIT_NumIter), 1)
+    repmat({'OUR-OUR'}, length(OUR_NumIter), 1)
+];
+boxplot(NumIter_all, group_iter);
+ylabel('Number of iterations');
+title('Comparison of number of iterations');
+grid on;
 
+saveas(NumIterPlot, fullfile(folder, 'NumIterComparison.png'));
 
 % Plot CompTime
 CompTimePlot = figure();
-scatter(MIT_CompTime, OUR_CompTime, 'k*');
-xlabel('MIT computation time');
-ylabel('OUR computation time');
-title('Comparison of computation time: MIT vs OUR');
-grid on; 
-hold on;
-min_val = min([MIT_CompTime; OUR_CompTime]);
-max_val = max([MIT_CompTime; OUR_CompTime]);
-plot([min_val, max_val], [min_val, max_val], 'r--', 'LineWidth', 2);
-legend('Data points', 'y = x', 'Location', 'best');
-saveas(NumIterPlot, fullfile(folder, 'CompTimeComparison.png'));
+CompTime_all = [
+    MIT_CompTime;
+    OUR_CompTime
+];
+group_time = [
+    repmat({'OUR-MIT'}, length(MIT_CompTime), 1)
+    repmat({'OUR-OUR'}, length(OUR_CompTime), 1)
+];
+boxplot(CompTime_all, group_time);
+ylabel('Computation time [ms]');
+title('Comparison of computation time');
+grid on;
+saveas(CompTimePlot, fullfile(folder, 'CompTimeComparison.png'));
 
 % Plot DistSolution
 DistSolPlot = figure();
@@ -64,7 +68,7 @@ DistSol_all = [data_MIT.DistSol, data_OUR.DistSol];
 boxplot(DistSol_all, 'Labels', {'MIT', 'OUR'});
 ylabel('Distance from correct solution');
 title('Comparison of distance from correct solution');
-saveas(DistSolPlot, fullfile(folder, 'DistSolComparison.png'));
+saveas(DistSolPlot, fullfile(folder, 'DistSolComparison.png'))
 
 % Plot DistBetween
 DistBetweenPlot = figure();
