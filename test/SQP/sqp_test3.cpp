@@ -16,7 +16,7 @@
 
 #include <fdaPDE/core/fdaPDE/optimization.h>
 #include <unsupported/Eigen/SparseExtra>
-#include "sqp_obj_constr.h"
+#include "../INCLUDE/obj_constr.h"
 #include <cstdio>
 #include <vector>
 

@@ -4,15 +4,14 @@
 // Make necessary includes
 #include <LBFGSB.h>                                     // MIT version
 #include <fdaPDE/core/fdaPDE/optimization.h>            // OUR version
-
 #include <LBFGSpp/LineSearchBacktracking.h>
 #include <fdaPDE/fdapde.h>
 #include <unsupported/Eigen/SparseExtra>
 #include <filesystem>
 #include <fstream>
 #include <chrono>
+#include "../INCLUDE/obj_constr.h"
 
-#include "sqp_obj_constr.h"
 // useful type aliases
 using Eigen::VectorXd;
 using fdapde::ScalarField;
