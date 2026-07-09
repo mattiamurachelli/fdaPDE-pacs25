@@ -25,12 +25,12 @@ ntest = 1;
 
 
 data_OUR = readtable( ...
-    strcat('../lagrangian_test', num2str(ntest), '.csv'), ...
+    strcat('../sqp_test', num2str(ntest), '.csv'), ...
     'ReadVariableNames', true, ...
     'Delimiter', ',');
 
 data_NLOPT = readtable( ...
-    strcat('../lagrangian_test', num2str(ntest), '_nlopt.csv'), ...
+    strcat('../sqp_test', num2str(ntest), '_nlopt.csv'), ...
     'ReadVariableNames', true, ...
     'Delimiter', ',');
 
@@ -100,7 +100,7 @@ title('Non-converged simulations');
 grid on;
 
 saveas(FailurePlot, ...
-       fullfile(folder, strcat('LagrangianTest', num2str(ntest), '_FailureHistogram.png')));
+       fullfile(folder, strcat('SQPTest', num2str(ntest), '_FailureHistogram.png')));
 
 %% ============================================================
 %% PLOT 2 : NUMBER OF ITERATIONS / EVALUATIONS
@@ -117,8 +117,8 @@ Iter_all = [
 ];
 
 group_iter = [
-    repmat({'OUR-ALM'}, height(data_OUR_conv), 1);
-    repmat({'NLOPT-AUGLAG'}, height(data_NLOPT_conv), 1)
+    repmat({'OUR-SQP'}, height(data_OUR_conv), 1);
+    repmat({'NLOPT-SQP'}, height(data_NLOPT_conv), 1)
 ];
 
 boxplot(Iter_all, group_iter);
@@ -130,7 +130,7 @@ title('Comparison of iterations/evaluations');
 grid on;
 
 saveas(IterPlot, ...
-       fullfile(folder, strcat('LagrangianTest', num2str(ntest), '_IterEvalComparison.png')));
+       fullfile(folder, strcat('SQPTest', num2str(ntest), '_IterEvalComparison.png')));
 
 %% ============================================================
 %% PLOT 3 : COMPUTATION TIME
@@ -148,8 +148,8 @@ CompTime_all = [
 ];
 
 group_time = [
-    repmat({'OUR-ALM'}, height(data_OUR_conv), 1);
-    repmat({'NLOPT-AUGLAG'}, height(data_NLOPT_conv), 1)
+    repmat({'OUR-SQP'}, height(data_OUR_conv), 1);
+    repmat({'NLOPT-SQP'}, height(data_NLOPT_conv), 1)
 ];
 
 boxplot(CompTime_all, group_time);
@@ -161,7 +161,7 @@ title('Comparison of computation time');
 grid on;
 
 saveas(CompTimePlot, ...
-       fullfile(folder, strcat('LagrangianTest', num2str(ntest), '_CompTimeComparison.png')));
+       fullfile(folder, strcat('SQPTest', num2str(ntest), '_CompTimeComparison.png')));
 
 %% ============================================================
 %% PLOT 4 : DISTANCE BETWEEN SOLUTIONS
@@ -204,7 +204,7 @@ for k = 1:length(common_test_ids)
 end
 
 group_between = ...
-    repmat({'OUR-ALM vs NLOPT-AUGLAG'}, length(DistBetween), 1);
+    repmat({'OUR-SQP vs NLOPT-SQP'}, length(DistBetween), 1);
 
 boxplot(DistBetween, group_between);
 
@@ -215,7 +215,7 @@ title('Comparison of distance between solutions');
 grid on;
 
 saveas(DistBetweenPlot, ...
-       fullfile(folder, strcat('LagrangianTest', num2str(ntest), '_DistBetweenComparison.png')));
+       fullfile(folder, strcat('SQPTest', num2str(ntest), '_DistBetweenComparison.png')));
 
 %% ============================================================
 %% PRINT SUMMARY
